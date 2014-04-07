@@ -4,7 +4,6 @@ import skinny._
 import skinny.validator._
 import model.Company
 import java.util.Locale
-import skinny.controller.feature.RequestScopeFeature
 
 class CompaniesController extends ApplicationController {
   protectFromForgery()
@@ -13,12 +12,6 @@ class CompaniesController extends ApplicationController {
    * SkinnyModel for this resource.
    */
   def model: SkinnyModel[Long, Company] = Company
-
-  // set resourceName/resourcesName to the request scope
-  beforeAction() {
-    set(RequestScopeFeature.ATTR_RESOURCES_NAME -> "items")
-    set(RequestScopeFeature.ATTR_RESOURCE_NAME -> "item")
-  }
 
   /**
    * Creates validator with prefix(resourceName).
@@ -39,9 +32,9 @@ class CompaniesController extends ApplicationController {
    * @param id id if exists
    */
   def debugLoggingParameters(form: MapValidator, id: Option[Long] = None) = {
-    val forLong = id.map { id => s" for [id -> ${id}]" }.getOrElse("")
+    val forId = id.map { id => s" for [id -> ${id}]" }.getOrElse("")
     val params = form.paramMap.map { case (name, value) => s"${name} -> '${value}'" }.mkString("[", ", ", "]")
-    logger.debug(s"Parameters${forLong}: ${params}")
+    logger.debug(s"Parameters${forId}: ${params}")
   }
 
   /**
@@ -51,9 +44,9 @@ class CompaniesController extends ApplicationController {
    * @param id id if exists
    */
   def debugLoggingPermittedParameters(parameters: PermittedStrongParameters, id: Option[Long] = None) = {
-    val forLong = id.map { id => s" for [id -> ${id}]" }.getOrElse("")
+    val forId = id.map { id => s" for [id -> ${id}]" }.getOrElse("")
     val params = parameters.params.map { case (name, (v, t)) => s"${name} -> '${v}' as ${t}" }.mkString("[", ", ", "]")
-    logger.debug(s"Permitted parameters${forLong}: ${params}")
+    logger.debug(s"Permitted parameters${forId}: ${params}")
   }
 
   // ----------------------------
@@ -105,7 +98,7 @@ class CompaniesController extends ApplicationController {
     render(s"/companies/show")
   }
 
-  def findResource(id: Long): Option[_] = model.findModel(id)
+  def findResource(id: Long): Option[Company] = model.findModel(id)
 
   /**
    * Shows input form for creation.
