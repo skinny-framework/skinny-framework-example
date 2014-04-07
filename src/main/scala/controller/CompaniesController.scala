@@ -20,7 +20,7 @@ class CompaniesController extends ApplicationController {
     validationWithPrefix(params, "company", validations: _*)
   }
 
-  protected def enablePagination: Boolean = true
+  protected def enablePagination = true
 
   /**
    * Shows a list of resource.
@@ -28,7 +28,7 @@ class CompaniesController extends ApplicationController {
    * GET /{resources}
    * GET /{resources}?pageNo=1&pageSize=10
    */
-  def showResources: Any = {
+  def showResources = {
     if (enablePagination) {
       val pageNo: Int = params.getAs[Int]("page").getOrElse(1)
       val pageSize: Int = 20
@@ -47,7 +47,7 @@ class CompaniesController extends ApplicationController {
    *
    * GET /{resources}/{id}
    */
-  def showResource(id: Long): Any = {
+  def showResource(id: Long) = {
     set("item", Company.findById(id).getOrElse(haltWithBody(404)))
     render(s"/companies/show")
   }
@@ -57,7 +57,7 @@ class CompaniesController extends ApplicationController {
    *
    * GET /{resources}/new
    */
-  def newResource: Any = render(s"/companies/new")
+  def newResource = render(s"/companies/new")
 
   /**
    * Params for creation.
@@ -67,7 +67,7 @@ class CompaniesController extends ApplicationController {
   /**
    * Input form for creation.
    */
-  def createForm = validation(createParams,
+  def createForm: MapValidator = validation(createParams,
     paramKey("name") is required & maxLength(512),
     paramKey("url") is required & maxLength(512)
   )
@@ -75,7 +75,7 @@ class CompaniesController extends ApplicationController {
   /**
    * Strong parameter definitions for creation form.
    */
-  def createFormStrongParameters = Seq(
+  def createFormStrongParameters: Seq[(String, ParamType)] = Seq(
     "name" -> ParamType.String,
     "url" -> ParamType.String
   )
@@ -85,7 +85,7 @@ class CompaniesController extends ApplicationController {
    *
    * POST /{resources}
    */
-  def createResource: Any = {
+  def createResource = {
     debugLoggingParameters(createForm)
     if (createForm.validate()) {
       val id = {
@@ -106,7 +106,7 @@ class CompaniesController extends ApplicationController {
    *
    * GET /{resources}/{id}/edit
    */
-  def editResource(id: Long): Any = {
+  def editResource(id: Long) = {
     Company.findById(id).map { company =>
       status = 200
       setAsParams(company)
@@ -117,12 +117,12 @@ class CompaniesController extends ApplicationController {
   /**
    * Params for modification.
    */
-  def updateParams = Params(params)
+  def updateParams: Params = Params(params)
 
   /**
    * Input form for modification.
    */
-  def updateForm = validation(updateParams,
+  def updateForm: MapValidator = validation(updateParams,
     paramKey("name") is required & maxLength(512),
     paramKey("url") is required & maxLength(512)
   )
@@ -130,7 +130,7 @@ class CompaniesController extends ApplicationController {
   /**
    * Strong parameter definitions for modification form.
    */
-  def updateFormStrongParameters = Seq(
+  def updateFormStrongParameters: Seq[(String, ParamType)] = Seq(
     "name" -> ParamType.String,
     "url" -> ParamType.String
   )
@@ -140,7 +140,7 @@ class CompaniesController extends ApplicationController {
    *
    * POST|PUT|PATCH /{resources}/{id}
    */
-  def updateResource(id: Long): Any = {
+  def updateResource(id: Long) = {
     debugLoggingParameters(updateForm, Some(id))
     Company.findById(id).map { _ => // company found
       if (updateForm.validate()) {
@@ -163,7 +163,7 @@ class CompaniesController extends ApplicationController {
    *
    * DELETE /{resources}/{id}
    */
-  def destroyResource(id: Long): Any = {
+  def destroyResource(id: Long) = {
     Company.findById(id).map { _ => // company found
       Company.deleteById(id)
       flash += ("notice" -> createI18n().get("company.flash.deleted").getOrElse("The company was deleted."))
