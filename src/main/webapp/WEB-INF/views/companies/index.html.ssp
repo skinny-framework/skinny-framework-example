@@ -2,11 +2,6 @@
 <%@val items: Seq[model.Company] %>
 <%@val totalPages: Int %>
 
-<%-- Be aware of package imports.
- 1. src/main/scala/templates/ScalatePackage.scala
- 2. scalateTemplateConfig in project/Build.scala
---%>
-
 <h3>${s.i18n.get("company.list")}</h3>
 <hr/>
 #for (notice <- s.flash.notice)

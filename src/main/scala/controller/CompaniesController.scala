@@ -48,13 +48,6 @@ class CompaniesController extends ApplicationController {
   }
 
   /**
-   * Use relative path if true. This is set as false by default.
-   *
-   * If you set this as true, routing will become simpler but /{resources}.xml or /{resources}.json don't work.
-   */
-  def useRelativePathForResourcesBasePath: Boolean = false
-
-  /**
    * Base path prefix. (e.g. /admin/{resourcesName} )
    */
   def resourcesBasePathPrefix: String = ""
@@ -96,12 +89,6 @@ class CompaniesController extends ApplicationController {
 
   def enablePagination: Boolean = true
 
-  def pageSize: Int = 20
-
-  def pageNoParamName: String = "page"
-
-  def totalPagesAttributeName: String = "totalPages"
-
   /**
    * Shows a list of resource.
    *
@@ -116,23 +103,18 @@ class CompaniesController extends ApplicationController {
    */
   def showResources()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     if (enablePagination) {
-      val pageNo: Int = params.getAs[Int](pageNoParamName).getOrElse(1)
-      val totalCount: Long = countResources()
+      val pageNo: Int = params.getAs[Int]("page").getOrElse(1)
+      val pageSize: Int = 20
+      val totalCount: Long = model.countAllModels()
       val totalPages: Int = (totalCount / pageSize).toInt + (if (totalCount % pageSize == 0) 0 else 1)
 
-      set("items", findResources(pageSize, pageNo))
-      set(totalPagesAttributeName -> totalPages)
+      set("items", model.findModels(pageSize, pageNo))
+      set("totalPages" -> totalPages)
     } else {
-      set("items", findResources())
+      set("items", model.findAllModels())
     }
     render(s"/companies/index")
   }
-
-  def countResources(): Long = model.countAllModels()
-
-  def findResources(pageSize: Int, pageNo: Int): List[_] = model.findModels(pageSize, pageNo)
-
-  def findResources(): List[_] = model.findAllModels()
 
   /**
    * Show single resource.

@@ -1,11 +1,6 @@
 <%@val s: skinny.Skinny %>
 <%@val keyAndErrorMessages: skinny.KeyAndErrorMessages %>
 
-<%-- Be aware of package imports.
- 1. src/main/scala/templates/ScalatePackage.scala
- 2. scalateTemplateConfig in project/Build.scala
---%>
-
 <div class="form-group">
   <label class="control-label" for="name">
     ${s.i18n.get("company.name")}
