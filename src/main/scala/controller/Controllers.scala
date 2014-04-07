@@ -24,7 +24,7 @@ object Controllers {
     // --------------
     // show
 
-    val indexUrl = get("/companies")(showResources()).as('index)
+    val indexUrl = get("/companies")(showResources).as('index)
     val showUrl = get("/companies/:id") {
       params.getAs[Long]("id").map(id => showResource(id)).getOrElse(haltWithBody(404))
     }.as('show)
@@ -39,18 +39,18 @@ object Controllers {
     // update
 
     val editUrl = get("/companies/:id/edit") {
-      params.getAs[Long]("id").map(id => editResource(id)) getOrElse haltWithBody(404)
+      params.getAs[Long]("id").map(id => editResource(id)).getOrElse(haltWithBody(404))
     }.as('edit)
-    val updateUrl = post("/companies/:id")({
-      params.getAs[Long]("id").map(id => updateResource(id)) getOrElse haltWithBody(404)
-    }).as('update)
+    val updateUrl = post("/companies/:id") {
+      params.getAs[Long]("id").map(id => updateResource(id)).getOrElse(haltWithBody(404))
+    }.as('update)
 
     // --------------
     // delete
 
-    val destroyUrl = delete("/companies/:id")({
-      params.getAs[Long]("id").map(id => destroyResource(id)) getOrElse haltWithBody(404)
-    }).as('destroy)
+    val destroyUrl = delete("/companies/:id") {
+      params.getAs[Long]("id").map(id => destroyResource(id)).getOrElse(haltWithBody(404))
+    }.as('destroy)
 
   }
 

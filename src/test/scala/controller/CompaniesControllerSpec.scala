@@ -18,7 +18,7 @@ class CompaniesControllerSpec extends FunSpec with ShouldMatchers with DBSetting
     describe("shows companies") {
       it("shows HTML response") {
         val controller = createMockController
-        controller.showResources()
+        controller.showResources
         controller.status should equal(200)
         controller.renderCall.map(_.path) should equal(Some("/companies/index"))
         controller.contentType should equal("text/html; charset=utf-8")
@@ -39,7 +39,7 @@ class CompaniesControllerSpec extends FunSpec with ShouldMatchers with DBSetting
     describe("shows new resource input form") {
       it("shows HTML response") {
         val controller = createMockController
-        controller.newResource()
+        controller.newResource
         controller.status should equal(200)
         controller.renderCall.map(_.path) should equal(Some("/companies/new"))
       }
@@ -51,14 +51,14 @@ class CompaniesControllerSpec extends FunSpec with ShouldMatchers with DBSetting
         controller.prepareParams(
           "name" -> "dummy",
           "url" -> "dummy")
-        controller.createResource()
+        controller.createResource
         controller.status should equal(200)
       }
 
       it("fails with invalid parameters") {
         val controller = createMockController
         controller.prepareParams() // no parameters
-        controller.createResource()
+        controller.createResource
         controller.status should equal(400)
         controller.errorMessages.size should be > (0)
       }

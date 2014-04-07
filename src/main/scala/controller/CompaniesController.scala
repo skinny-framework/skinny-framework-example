@@ -9,6 +9,7 @@ import model.Company
  * see also: controller.Controllers
  */
 class CompaniesController extends ApplicationController {
+  // CSRF guard
   protectFromForgery()
 
   /**
@@ -27,13 +28,12 @@ class CompaniesController extends ApplicationController {
    * GET /{resources}
    * GET /{resources}?pageNo=1&pageSize=10
    */
-  def showResources()(implicit format: Format = Format.HTML): Any = withFormat(format) {
+  def showResources: Any = {
     if (enablePagination) {
       val pageNo: Int = params.getAs[Int]("page").getOrElse(1)
       val pageSize: Int = 20
       val totalCount: Long = Company.count()
       val totalPages: Int = (totalCount / pageSize).toInt + (if (totalCount % pageSize == 0) 0 else 1)
-
       set("items", Company.findAllWithPagination(Pagination.page(pageNo).per(pageSize)))
       set("totalPages" -> totalPages)
     } else {
@@ -47,21 +47,17 @@ class CompaniesController extends ApplicationController {
    *
    * GET /{resources}/{id}
    */
-  def showResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    set("item", findResource(id).getOrElse(haltWithBody(404)))
+  def showResource(id: Long): Any = {
+    set("item", Company.findById(id).getOrElse(haltWithBody(404)))
     render(s"/companies/show")
   }
-
-  def findResource(id: Long): Option[Company] = Company.findById(id)
 
   /**
    * Shows input form for creation.
    *
    * GET /{resources}/new
    */
-  def newResource()(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    render(s"/companies/new")
-  }
+  def newResource: Any = render(s"/companies/new")
 
   /**
    * Params for creation.
@@ -89,7 +85,7 @@ class CompaniesController extends ApplicationController {
    *
    * POST /{resources}
    */
-  def createResource()(implicit format: Format = Format.HTML): Any = withFormat(format) {
+  def createResource: Any = {
     debugLoggingParameters(createForm)
     if (createForm.validate()) {
       val id = {
@@ -110,10 +106,10 @@ class CompaniesController extends ApplicationController {
    *
    * GET /{resources}/{id}/edit
    */
-  def editResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    Company.findById(id).map { m =>
+  def editResource(id: Long): Any = {
+    Company.findById(id).map { company =>
       status = 200
-      setAsParams(m)
+      setAsParams(company)
       render("/companies/edit")
     } getOrElse haltWithBody(404)
   }
@@ -144,9 +140,9 @@ class CompaniesController extends ApplicationController {
    *
    * POST|PUT|PATCH /{resources}/{id}
    */
-  def updateResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
+  def updateResource(id: Long): Any = {
     debugLoggingParameters(updateForm, Some(id))
-    Company.findById(id).map { m =>
+    Company.findById(id).map { _ => // company found
       if (updateForm.validate()) {
         val parameters = updateParams.permit(updateFormStrongParameters: _*)
         debugLoggingPermittedParameters(parameters, Some(id))
@@ -167,8 +163,8 @@ class CompaniesController extends ApplicationController {
    *
    * DELETE /{resources}/{id}
    */
-  def destroyResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    Company.findById(id).map { m =>
+  def destroyResource(id: Long): Any = {
+    Company.findById(id).map { _ => // company found
       Company.deleteById(id)
       flash += ("notice" -> createI18n().get("company.flash.deleted").getOrElse("The company was deleted."))
       status = 200
