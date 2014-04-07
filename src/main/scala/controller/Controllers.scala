@@ -24,31 +24,31 @@ object Controllers {
     // --------------
     // show
 
-    val indexUrl = get(resourcesBasePath)(showResources()).as('index)
-    val showUrl = get(s"${resourcesBasePath}/:id") {
+    val indexUrl = get("/companies")(showResources()).as('index)
+    val showUrl = get("/companies/:id") {
       params.getAs[Long]("id").map(id => showResource(id)).getOrElse(haltWithBody(404))
     }.as('show)
 
     // --------------
     // create
 
-    val newUrl = get(s"${resourcesBasePath}/new")(newResource).as('new)
-    val createUrl = post(resourcesBasePath)(createResource).as('create)
+    val newUrl = get("/companies/new")(newResource).as('new)
+    val createUrl = post("/companies")(createResource).as('create)
 
     // --------------
     // update
 
-    val editUrl = get(s"${resourcesBasePath}/:${"id"}/edit") {
+    val editUrl = get("/companies/:id/edit") {
       params.getAs[Long]("id").map(id => editResource(id)) getOrElse haltWithBody(404)
     }.as('edit)
-    val updateUrl = post(s"${resourcesBasePath}/:${"id"}")({
+    val updateUrl = post("/companies/:id")({
       params.getAs[Long]("id").map(id => updateResource(id)) getOrElse haltWithBody(404)
     }).as('update)
 
     // --------------
     // delete
 
-    val destroyUrl = delete(s"${resourcesBasePath}/:${"id"}")({
+    val destroyUrl = delete("/companies/:id")({
       params.getAs[Long]("id").map(id => destroyResource(id)) getOrElse haltWithBody(404)
     }).as('destroy)
 

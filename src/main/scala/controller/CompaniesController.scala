@@ -14,21 +14,6 @@ class CompaniesController extends ApplicationController {
    */
   def model: SkinnyModel[Long, Company] = Company
 
-  /**
-   * Resource name in the plural. This name will be used for path and directory name to locale template files.
-   */
-  def resourcesName = "companies"
-
-  /**
-   * Resource name in the singular. This name will be used for path and validator's prefix.
-   */
-  def resourceName = "company"
-
-  /**
-   * Base path.
-   */
-  def resourcesBasePath = s"/${toSnakeCase(resourcesName)}"
-
   // set resourceName/resourcesName to the request scope
   beforeAction() {
     set(RequestScopeFeature.ATTR_RESOURCES_NAME -> "items")
@@ -44,19 +29,7 @@ class CompaniesController extends ApplicationController {
    * @return validator
    */
   override def validation(params: Params, validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
-    validationWithPrefix(params, resourceName, validations: _*)
-  }
-
-  /**
-   * Base path prefix. (e.g. /admin/{resourcesName} )
-   */
-  def resourcesBasePathPrefix: String = ""
-
-  /**
-   * Normalized base path. This method should not be overridden.
-   */
-  final def normalizedResourcesBasePath: String = {
-    resourcesBasePath.replaceFirst("^/", "").replaceFirst("/$", "")
+    validationWithPrefix(params, "company", validations: _*)
   }
 
   /**
@@ -185,11 +158,11 @@ class CompaniesController extends ApplicationController {
       }
       format match {
         case Format.HTML =>
-          flash += ("notice" -> createI18n().get(s"${resourceName}.flash.created").getOrElse(s"The ${resourceName} was created."))
-          redirect302(s"/${normalizedResourcesBasePath}/${model.idToRawValue(id)}")
+          flash += ("notice" -> createI18n().get(s"company.flash.created").getOrElse(s"The company was created."))
+          redirect302(s"/companies/${model.idToRawValue(id)}")
         case _ =>
           status = 201
-          response.setHeader("Location", s"${contextPath}/${resourcesName}/${model.idToRawValue(id)}")
+          response.setHeader("Location", s"${contextPath}/companies/${model.idToRawValue(id)}")
       }
     } else {
       status = 400
@@ -262,15 +235,15 @@ class CompaniesController extends ApplicationController {
         status = 200
         format match {
           case Format.HTML =>
-            flash += ("notice" -> createI18n().get(s"${resourceName}.flash.updated").getOrElse(s"The ${resourceName} was updated."))
+            flash += ("notice" -> createI18n().get("company.flash.updated").getOrElse("The company was updated."))
             set("item", model.findModel(id).getOrElse(haltWithBody(404)))
-            redirect302(s"/${normalizedResourcesBasePath}/${model.idToRawValue(id)}")
+            redirect302(s"/companies/${model.idToRawValue(id)}")
           case _ =>
         }
       } else {
         status = 400
         format match {
-          case Format.HTML => render(s"/companies/edit")
+          case Format.HTML => render("/companies/edit")
           case _ => renderWithFormat(keyAndErrorMessages)
         }
       }
@@ -289,7 +262,7 @@ class CompaniesController extends ApplicationController {
   def destroyResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     model.findModel(id).map { m =>
       model.deleteModelById(id)
-      flash += ("notice" -> createI18n().get(s"${resourceName}.flash.deleted").getOrElse(s"The ${resourceName} was deleted."))
+      flash += ("notice" -> createI18n().get("company.flash.deleted").getOrElse(s"The company was deleted."))
       status = 200
     } getOrElse haltWithBody(404)
   }
