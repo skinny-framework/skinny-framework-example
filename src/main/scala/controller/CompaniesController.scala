@@ -2,16 +2,11 @@ package controller
 
 import skinny._
 import skinny.validator._
-import model.Company
 import java.util.Locale
+import model.Company
 
 class CompaniesController extends ApplicationController {
   protectFromForgery()
-
-  /**
-   * SkinnyModel for this resource.
-   */
-  def model: SkinnyModel[Long, Company] = Company
 
   /**
    * Creates validator with prefix(resourceName).
@@ -71,13 +66,13 @@ class CompaniesController extends ApplicationController {
     if (enablePagination) {
       val pageNo: Int = params.getAs[Int]("page").getOrElse(1)
       val pageSize: Int = 20
-      val totalCount: Long = model.countAllModels()
+      val totalCount: Long = Company.count()
       val totalPages: Int = (totalCount / pageSize).toInt + (if (totalCount % pageSize == 0) 0 else 1)
 
-      set("items", model.findModels(pageSize, pageNo))
+      set("items", Company.findAllWithPagination(Pagination.page(pageNo).per(pageSize)))
       set("totalPages" -> totalPages)
     } else {
-      set("items", model.findAllModels())
+      set("items", Company.findAll())
     }
     render(s"/companies/index")
   }
@@ -98,7 +93,7 @@ class CompaniesController extends ApplicationController {
     render(s"/companies/show")
   }
 
-  def findResource(id: Long): Option[Company] = model.findModel(id)
+  def findResource(id: Long): Option[Company] = Company.findById(id)
 
   /**
    * Shows input form for creation.
@@ -147,15 +142,15 @@ class CompaniesController extends ApplicationController {
       val id = {
         val parameters = createParams.permit(createFormStrongParameters: _*)
         debugLoggingPermittedParameters(parameters)
-        model.createNewModel(parameters)
+        Company.createWithPermittedAttributes(parameters)
       }
       format match {
         case Format.HTML =>
           flash += ("notice" -> createI18n().get(s"company.flash.created").getOrElse(s"The company was created."))
-          redirect302(s"/companies/${model.idToRawValue(id)}")
+          redirect302(s"/companies/${id}")
         case _ =>
           status = 201
-          response.setHeader("Location", s"${contextPath}/companies/${model.idToRawValue(id)}")
+          response.setHeader("Location", s"${contextPath}/companies/${id}")
       }
     } else {
       status = 400
@@ -176,7 +171,7 @@ class CompaniesController extends ApplicationController {
    * @return input form
    */
   def editResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    model.findModel(id).map { m =>
+    Company.findById(id).map { m =>
       status = 200
       format match {
         case Format.HTML =>
@@ -220,17 +215,17 @@ class CompaniesController extends ApplicationController {
   def updateResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     debugLoggingParameters(updateForm, Some(id))
 
-    model.findModel(id).map { m =>
+    Company.findById(id).map { m =>
       if (updateForm.validate()) {
         val parameters = updateParams.permit(updateFormStrongParameters: _*)
         debugLoggingPermittedParameters(parameters, Some(id))
-        model.updateModelById(id, parameters)
+        Company.updateById(id).withPermittedAttributes(parameters)
         status = 200
         format match {
           case Format.HTML =>
             flash += ("notice" -> createI18n().get("company.flash.updated").getOrElse("The company was updated."))
-            set("item", model.findModel(id).getOrElse(haltWithBody(404)))
-            redirect302(s"/companies/${model.idToRawValue(id)}")
+            set("item", Company.findById(id).getOrElse(haltWithBody(404)))
+            redirect302(s"/companies/${id}")
           case _ =>
         }
       } else {
@@ -253,8 +248,8 @@ class CompaniesController extends ApplicationController {
    * @return result
    */
   def destroyResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    model.findModel(id).map { m =>
-      model.deleteModelById(id)
+    Company.findById(id).map { m =>
+      Company.deleteById(id)
       flash += ("notice" -> createI18n().get("company.flash.deleted").getOrElse(s"The company was deleted."))
       status = 200
     } getOrElse haltWithBody(404)
