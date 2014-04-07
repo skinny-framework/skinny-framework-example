@@ -1,0 +1,19 @@
+<%@val s: skinny.Skinny %>
+
+<%-- Be aware of package imports.
+ 1. src/main/scala/templates/ScalatePackage.scala
+ 2. scalateTemplateConfig in project/Build.scala
+--%>
+
+<h3>${s.i18n.get("member.edit")}</h3>
+<hr/>
+
+<%--
+#for (e <- s.errorMessages)
+<p class="alert alert-danger">${e}</p>
+#end
+--%>
+
+<form method="post" action="${s.url(Controllers.members.updateUrl, "id" -> s.params.id)}" class="form">
+ ${include("_form.html.ssp")}
+</form>

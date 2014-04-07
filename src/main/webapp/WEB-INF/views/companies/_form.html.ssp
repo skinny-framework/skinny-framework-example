@@ -1,0 +1,51 @@
+<%@val s: skinny.Skinny %>
+<%@val keyAndErrorMessages: skinny.KeyAndErrorMessages %>
+
+<%-- Be aware of package imports.
+ 1. src/main/scala/templates/ScalatePackage.scala
+ 2. scalateTemplateConfig in project/Build.scala
+--%>
+
+<div class="form-group">
+  <label class="control-label" for="name">
+    ${s.i18n.get("company.name")}
+  </label>
+  <div class="controls row">
+    <div class="${if(keyAndErrorMessages.hasErrors("name")) "has-error" else ""}">
+      <div class="col-xs-12">
+        <input type="text" name="name" class="form-control" value="${s.params.name}" />
+      </div>
+    </div>
+    #if (keyAndErrorMessages.hasErrors("name"))
+      <div class="col-xs-12 has-error">
+        #for (error <- keyAndErrorMessages.getErrors("name"))
+          <label class="control-label">${error}</label>
+        #end
+      </div>
+    #end
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label" for="url">
+    ${s.i18n.get("company.url")}
+  </label>
+  <div class="controls row">
+    <div class="${if(keyAndErrorMessages.hasErrors("url")) "has-error" else ""}">
+      <div class="col-xs-12">
+        <input type="text" name="url" class="form-control" value="${s.params.url}" />
+      </div>
+    </div>
+    #if (keyAndErrorMessages.hasErrors("url"))
+      <div class="col-xs-12 has-error">
+        #for (error <- keyAndErrorMessages.getErrors("url"))
+          <label class="control-label">${error}</label>
+        #end
+      </div>
+    #end
+  </div>
+</div>
+<div class="form-actions">
+  ${unescape(s.csrfHiddenInputTag)}
+  <input type="submit" class="btn btn-primary" value="${s.i18n.get("submit")}">
+  <a class="btn btn-default" href="${s.url(Controllers.companies.indexUrl)}">${s.i18n.get("cancel")}</a>
+</div>

@@ -1,0 +1,155 @@
+#!/bin/bash
+
+current_dir=`dirname $0`
+sbt_path=${current_dir}/sbt
+chmod +x ${sbt_path}
+
+function run_app() {
+  ${sbt_path} "~;container:stop;container:start"
+}
+function run_precompile_app() {
+  ${sbt_path} "project precompileDev" "~;container:stop;container:start"
+}
+function setup_build() {
+  rm -rf build
+  mkdir build
+  cp -pr src build/src
+  cp -pr build.sbt build/build.sbt
+}
+function setup_standalone_build() {
+  rm -rf standalone-build
+  mkdir standalone-build
+  cp -pr src standalone-build/src
+  cp -pr build.sbt standalone-build/build.sbt
+}
+function copry_resources_to_task() {
+  rm -rf task/src/main/resources
+  mkdir -p task/src/main/resources
+  cp -pr src/main/resources/* task/src/main/resources/.
+}
+
+command="$1"
+if [ "$command" == "run" -o "$command" == "s" -o "$command" == "server" ];then
+  option="$2"
+  if [ "$option" == "-precompile" -o "$option" == "--precompile" ];then
+    run_precompile_app
+  else
+    run_app
+  fi
+elif [ "$command" == "clean" ];then
+  ${sbt_path} dev/clean
+elif [ "$command" == "update" ];then
+  ${sbt_path} update
+elif [ "$command" == "console" ];then
+  ${sbt_path} dev/console
+elif [ "$command" == "~compile" ];then
+  ${sbt_path} "project dev" "~;compile"
+elif [ "$command" == "compile" ];then
+  ${sbt_path} dev/compile
+elif [ "$command" == "test" ];then
+  export SKINNY_ENV="test"
+  ${sbt_path} dev/test
+elif [ "$command" == "~test" ];then
+  export SKINNY_ENV="test"
+  ${sbt_path} "project dev" "~;test"
+elif [ "$command" == "test-quick" -o "$command" == "testQuick" ];then
+  export SKINNY_ENV="test"
+  ${sbt_path} dev/testQuick
+elif [ "$command" == "~test-quick" -o "$command" == "~testQuick" ];then
+  export SKINNY_ENV="test"
+  ${sbt_path} "project dev" "~;testQuick"
+elif [ "$command" == "test-only" -o "$command" == "testOnly" ];then
+  export SKINNY_ENV="test"
+  ${sbt_path} "dev/testOnly $2"
+elif [ "$command" == "~test-only" -o "$command" == "~testOnly" ];then
+  export SKINNY_ENV="test"
+  ${sbt_path} "project dev" "~;testOnly $2"
+elif [ "$command" == "test:coverage" ];then
+  export SKINNY_ENV="test"
+  ${sbt_path} "dev/scoverage:test"
+elif [ "$command" == "scalajs:watch" ];then
+  ${sbt_path} "project scalajs" "~;packageJS"
+elif [ "$command" == "scalajs:package" ];then
+  ${sbt_path} "project scalajs" packageJS
+elif [ "$command" == "scalajs:optimize" ];then
+  ${sbt_path} "project scalajs" optimizeJS
+elif [ "$command" == "g" -o "$command" == "generate" ];then
+  generator_type="$2"
+  shift
+  shift
+  if [ "$generator_type" == "" ]; then
+    echo "Usage: ./skinny g/generate [type] [options...]"
+  else
+    copry_resources_to_task
+    command="task/run generate:$generator_type $@"
+    ${sbt_path} "${command}"
+  fi
+elif [ "$command" == "db:migrate" ];then
+  copry_resources_to_task
+  shift
+  ${sbt_path} "task/run db:migrate $@"
+elif [ "$command" == "db:repair" ];then
+  copry_resources_to_task
+  shift
+  ${sbt_path} "task/run db:repair $@"
+elif [ "$command" == "eclipse" ];then
+  ${sbt_path} eclipse
+elif [ "$command" == "idea" -o "$command" == "gen-idea" ];then
+  ${sbt_path} gen-idea
+elif [ "$command" == "package" ];then
+  setup_build
+  copry_resources_to_task
+  ${sbt_path} "task/run assets:precompile" build/package
+elif [ "$command" == "package:standalone" ];then
+  setup_standalone_build
+  copry_resources_to_task
+  ${sbt_path} "task/run assets:precompile" standalone-build/assembly
+elif [ "$command" == "publish" ];then
+  setup_build
+  copry_resources_to_task
+  ${sbt_path} "task/run assets:precompile" build/publish
+else
+  echo ""
+  echo " Usage: ./skinny [COMMAND] [OPTIONS]..."
+  echo ""
+  echo "  run/server/s    : will run application for local development"
+  echo "  run -precompile : will run application with Scalate precompilation"
+  echo "  clean           : will clear target directory"
+  echo "  update          : will run sbt update"
+  echo "  console         : will run sbt console"
+  echo "  compile         : will compile all the classes"
+  echo "  ~compile        : will compile all the classes when changes are detected"
+  echo "  db:migrate      : will execute database migration"
+  echo "  db:repair       : will recover when previous migration failed"
+  echo "  test            : will run all the tests"
+  echo "  ~test           : will run all the tests when changes are detected"
+  echo "  testQuick       : will run only failed tests"
+  echo "  ~testQuick      : will run only failed tests when changes are detected"
+  echo "  testOnly        : will run the specified test"
+  echo "  ~testOnly       : will run the specified test when changes are detected"
+  echo "  test:coverage   : will run all the tests and output coverage reports"
+  echo "  package            : will create *.war file to deploy"
+  echo "  package:standalone : will create *.jar file to run as stand alone app"
+  echo "  publish            : will publish *.war file to repository"
+  echo ""
+  echo "  # Scala.js trial is disabled by default"
+  echo "  scalajs:watch    : will watch Scala.js Scala code change and convert to JS"
+  echo "  scalajs:package  : will convert Scala.js Scala code to JS file"
+  echo "  scalajs:optimize : will optimize the huge JS file to optimized small JS"
+  echo ""
+  echo "  eclipse       : will setup Scala IDE settings"
+  echo "  idea/gen-idea : will setup IntelliJ IDEA settings"
+  echo ""
+  echo "  g/generate controller : will generate controller"
+  echo "  g/generate model      : will generate model"
+  echo "  g/generate migration  : will generate db migration file"
+  echo ""
+  echo "  g/generate scaffold       : will generate scaffold files with ssp templates"
+  echo "  g/generate scaffold:scaml : will generate scaffold files with scaml templates"
+  echo "  g/generate scaffold:jade  : will generate scaffold files with jade templates"
+  echo ""
+  echo "  g/generate reverse-scaffold       : will generate scaffold from existing database"
+  echo "  g/generate reverse-scaffold:scaml : will generate scaffold from existing database"
+  echo "  g/generate reverse-scaffold:jade  : will generate scaffold from existing database"
+  echo ""
+fi

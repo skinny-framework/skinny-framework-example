@@ -1,0 +1,76 @@
+<%@val s: skinny.Skinny %>
+<%@val keyAndErrorMessages: skinny.KeyAndErrorMessages %>
+
+<%-- Be aware of package imports.
+ 1. src/main/scala/templates/ScalatePackage.scala
+ 2. scalateTemplateConfig in project/Build.scala
+--%>
+
+<div class="form-group">
+  <label class="control-label" for="name">
+    ${s.i18n.get("member.name")}
+  </label>
+  <div class="controls row">
+    <div class="${if(keyAndErrorMessages.hasErrors("name")) "has-error" else ""}">
+      <div class="col-xs-12">
+        <input type="text" name="name" class="form-control" value="${s.params.name}" />
+      </div>
+    </div>
+    #if (keyAndErrorMessages.hasErrors("name"))
+      <div class="col-xs-12 has-error">
+        #for (error <- keyAndErrorMessages.getErrors("name"))
+          <label class="control-label">${error}</label>
+        #end
+      </div>
+    #end
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label" for="nickname">
+    ${s.i18n.get("member.nickname")}
+  </label>
+  <div class="controls row">
+    <div class="${if(keyAndErrorMessages.hasErrors("nickname")) "has-error" else ""}">
+      <div class="col-xs-12">
+        <input type="text" name="nickname" class="form-control" value="${s.params.nickname}" />
+      </div>
+    </div>
+    #if (keyAndErrorMessages.hasErrors("nickname"))
+      <div class="col-xs-12 has-error">
+        #for (error <- keyAndErrorMessages.getErrors("nickname"))
+          <label class="control-label">${error}</label>
+        #end
+      </div>
+    #end
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label">
+    ${s.i18n.get("member.birthday")}
+  </label>
+  <div class="controls row">
+    <div class="${if(keyAndErrorMessages.hasErrors("birthday")) "has-error" else ""}">
+      <div class="col-xs-2">
+        <input type="text" name="birthday_year"  class="form-control" value="${s.params.birthday_year}"  placeholder="${s.i18n.get("year")}"  maxlength=4 />
+      </div>
+      <div class="col-xs-2">
+        <input type="text" name="birthday_month" class="form-control" value="${s.params.birthday_month}" placeholder="${s.i18n.get("month")}" maxlength=2 />
+      </div>
+      <div class="col-xs-2">
+        <input type="text" name="birthday_day"   class="form-control" value="${s.params.birthday_day}"   placeholder="${s.i18n.get("day")}"   maxlength=2 />
+      </div>
+    </div>
+    #if (keyAndErrorMessages.hasErrors("birthday"))
+      <div class="col-xs-12 has-error">
+        #for (error <- keyAndErrorMessages.getErrors("birthday"))
+          <label class="control-label">${error}</label>
+        #end
+      </div>
+    #end
+  </div>
+</div>
+<div class="form-actions">
+  ${unescape(s.csrfHiddenInputTag)}
+  <input type="submit" class="btn btn-primary" value="${s.i18n.get("submit")}">
+  <a class="btn btn-default" href="${s.url(Controllers.members.indexUrl)}">${s.i18n.get("cancel")}</a>
+</div>

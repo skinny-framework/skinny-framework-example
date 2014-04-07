@@ -1,0 +1,60 @@
+<%@val s: skinny.Skinny %>
+<%@val items: Seq[model.Member] %>
+<%@val totalPages: Int %>
+
+<%-- Be aware of package imports.
+ 1. src/main/scala/templates/ScalatePackage.scala
+ 2. scalateTemplateConfig in project/Build.scala
+--%>
+
+<h3>${s.i18n.get("member.list")}</h3>
+<hr/>
+#for (notice <- s.flash.notice)
+  <p class="alert alert-info">${notice}</p>
+#end
+
+#if (totalPages > 1)
+  <ul class="pagination">
+    <li>
+      <a href="${s.url(Controllers.members.indexUrl, "page" -> 1)}">&laquo;</a>
+    </li>
+    #for (i <- (1 to totalPages))
+      <li>
+        <a href="${s.url(Controllers.members.indexUrl, "page" -> i)}">${i}</a>
+      </li>
+    #end
+    <li>
+      <a href="${s.url(Controllers.members.indexUrl, "page" -> totalPages)}">&raquo;</a>
+    </li>
+  </ul>
+#end
+
+<table class="table table-bordered">
+<thead>
+  <tr>
+    <th>${s.i18n.get("member.id")}</th>
+    <th>${s.i18n.get("member.name")}</th>
+    <th>${s.i18n.get("member.nickname")}</th>
+    <th>${s.i18n.get("member.birthday")}</th>
+    <th></th>
+  </tr>
+</thead>
+<tbody>
+  #for (item <- items)
+  <tr>
+    <td>${item.id}</td>
+    <td>${item.name}</td>
+    <td>${item.nickname}</td>
+    <td>${item.birthday}</td>
+    <td>
+      <a href="${s.url(Controllers.members.showUrl, "id" -> item.id)}" class="btn btn-default">${s.i18n.get("detail")}</a>
+      <a href="${s.url(Controllers.members.editUrl, "id" -> item.id)}" class="btn btn-info">${s.i18n.get("edit")}</a>
+      <a data-method="delete" data-confirm="${s.i18n.get("member.delete.confirm")}"
+        href="${s.url(Controllers.members.destroyUrl, "id" -> item.id)}" rel="nofollow" class="btn btn-danger">${s.i18n.get("delete")}</a>
+    </td>
+  </tr>
+  #end
+</tbody>
+</table>
+
+<a href="${s.url(Controllers.members.newUrl)}" class="btn btn-primary">${s.i18n.get("new")}</a>
