@@ -3,7 +3,7 @@ package model
 import skinny.DBSettings
 import skinny.test._
 import org.scalatest.fixture.FlatSpec
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import scalikejdbc.scalatest._
 import org.joda.time._
 

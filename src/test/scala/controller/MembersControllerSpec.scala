@@ -1,14 +1,13 @@
 package controller
 
-import org.scalatest.FunSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 import skinny._
 import skinny.test._
 import org.joda.time._
 import model._
 
 // NOTICE before/after filters won't be executed by default
-class MembersControllerSpec extends FunSpec with ShouldMatchers with DBSettings {
+class MembersControllerSpec extends FunSpec with Matchers with DBSettings {
 
   def createMockController = new MembersController with MockController
   def newMember = FactoryGirl(Member).create()
@@ -40,7 +39,7 @@ class MembersControllerSpec extends FunSpec with ShouldMatchers with DBSettings 
         val controller = createMockController
         controller.showResource(member.id)
         controller.status should equal(200)
-        controller.requestScope[Member]("item") should equal(Some(member))
+        controller.getFromRequestScope[Member]("item") should equal(Some(member))
         controller.renderCall.map(_.path) should equal(Some("/members/show"))
       }
     }
