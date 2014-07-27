@@ -13,36 +13,33 @@ object SkinnyAppBuild extends Build {
   // Common Settings
   // -------------------------------------------------------
 
-  val skinnyVersion = "1.0.5"
-  val scalatraVersion = "2.2.2"
-
-  // We choose Jetty 8 as default for Java 6(!) users. 
-  // Jetty 9 is preferred but 9.1 looks very slow in some cases.
-  //val jettyVersion = "9.0.7.v20131107"
-  val jettyVersion = "8.1.14.v20131031"
+  val skinnyVersion = "1.2.+"
+  val scalatraVersion = "2.3.0"
+  val jettyVersion = "9.2.1.v20140609"
+  val theScalaVersion = "2.11.2"
 
   lazy val baseSettings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ Seq(
     organization := "org.skinny-framework",
     version      := "0.1.0-SNAPSHOT",
-    scalaVersion := "2.10.4",
+    scalaVersion := theScalaVersion,
     libraryDependencies := Seq(
       "org.skinny-framework"    %% "skinny-framework"   % skinnyVersion,
       "org.skinny-framework"    %% "skinny-assets"      % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"        % skinnyVersion,
-      "com.h2database"          %  "h2"                 % "1.3.175",      // your own JDBC driver
+      "com.h2database"          %  "h2"                 % "1.4.+",      // your own JDBC driver
       "ch.qos.logback"          %  "logback-classic"    % "1.1.2",
       // To fix java.lang.ClassNotFoundException: scala.collection.Seq when running tests
-      "org.scala-lang"          %  "scala-library"       % "2.10.4"              % "test",
-      "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion         % "test",
-      "org.skinny-framework"    %% "skinny-test"         % skinnyVersion         % "test",
-      "org.scalatra"            %% "scalatra-scalatest"  % scalatraVersion       % "test",
+      "org.scala-lang"          %  "scala-library"       % theScalaVersion      % "test",
+      "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion        % "test",
+      "org.skinny-framework"    %% "skinny-test"         % skinnyVersion        % "test",
+      "org.scalatra"            %% "scalatra-scalatest"  % scalatraVersion      % "test",
       // If you prefer specs2, we don't bother you (scaffold generator supports only scalatest)
       // "org.scalatra"            %% "scalatra-specs2"    % scalatraVersion       % "test",
       "org.eclipse.jetty"       %  "jetty-webapp"       % jettyVersion          % "container",
       "org.eclipse.jetty"       %  "jetty-plus"         % jettyVersion          % "container",
-      "org.eclipse.jetty.orbit" %  "javax.servlet"      % "3.0.0.v201112011016" % "container;provided;test",
+      "javax.servlet"           %  "javax.servlet-api"  % "3.1.0"               % "container;provided;test",
       // To fix Scalate runtime evaluation error on Java 8 (https://gist.github.com/seratch/9680709)
-      "org.scala-lang"          %  "scala-compiler"     % "2.10.4"              % "container"
+      "org.scala-lang"          %  "scala-compiler"     % theScalaVersion       % "container"
     ),
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
@@ -118,24 +115,6 @@ object SkinnyAppBuild extends Build {
       libraryDependencies += "org.skinny-framework" %% "skinny-standalone" % skinnyVersion
     ) ++ jettyOrbitHack
   )
-
-  // -------------------------------------------------------
-  // Scala.JS Trial
-  // -------------------------------------------------------
-/*
-  lazy val scalaJS = Project(id = "scalajs", base = file("src/main/webapp/WEB-INF/assets"),
-    settings = Defaults.defaultSettings ++ Seq(
-      name := "application", // JavaScript file name
-      unmanagedSourceDirectories in Compile <+= baseDirectory(_ / "scala"),
-      libraryDependencies ++= Seq(
-        "org.scala-lang.modules.scalajs" %% "scalajs-dom"                    % "0.3",
-        "org.scala-lang.modules.scalajs" %% "scalajs-jquery"                 % "0.3",
-        "org.scala-lang.modules.scalajs" %% "scalajs-jasmine-test-framework" % "0.4.0" % "test"
-      ),
-      crossTarget in Compile <<= baseDirectory(_ / ".." / ".." / "assets" / "js")
-    )
-  )
-*/
 
 }
 
