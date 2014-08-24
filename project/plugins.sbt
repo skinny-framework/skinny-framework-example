@@ -1,16 +1,26 @@
 // --------------------------------------------
 // sbt plugins for this Skinny app project
 // --------------------------------------------
+resolvers += Classpaths.sbtPluginReleases
 
 // --------
 // Scalatra sbt plugin
-addSbtPlugin("org.scalatra.sbt" % "scalatra-sbt" % "0.3.4")
+addSbtPlugin("org.scalatra.sbt" % "scalatra-sbt" % "0.3.5" excludeAll(
+  ExclusionRule(organization = "org.mortbay.jetty"),
+  ExclusionRule(organization = "org.eclipse.jetty"),
+  ExclusionRule(organization = "org.apache.tomcat.embed"),
+  ExclusionRule(organization = "com.earldouglas")
+))
 
 // scalatra-sbt depends on xsbt-web-plugin
-addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.7.0")
+addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.9.0" excludeAll(
+  ExclusionRule(organization = "org.mortbay.jetty"),
+  ExclusionRule(organization = "org.eclipse.jetty"),
+  ExclusionRule(organization = "org.apache.tomcat.embed")
+))
 
 // for Scalate template compilaion
-addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.4.2")
+addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.5.0")
 
 // --------
 // scalarifrom for code formatting
@@ -19,29 +29,17 @@ addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.4.2")
 addSbtPlugin("com.typesafe.sbt" % "sbt-scalariform" % "1.3.0")
 
 // --------
-// for IntelliJ IDEA users (./skinny idea)
+// IntelliJ IDEA
 addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
 
 // --------
-// for Eclise (Scala IDE) users (./skinny eclipse)
-addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "2.4.0")
-
-// --------
-// for standalone jar packaging (./skinny package:standalone)
-addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.11.2")
-
-// --------
 // scoverage for test coverage (./skinny test:coverage)
-// NOTE: 
-//   Disabled by default because scoverage 0.98 doesn't work with Skinny ORM
-//   (https://github.com/skinny-framework/skinny-framework/issues/97)
-//resolvers += Classpaths.sbtPluginReleases
-//addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "0.98.0")
+addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "0.99.7.1")
 
 // --------
-// Scala.js
-// http://www.scala-js.org/
-//addSbtPlugin("org.scala-lang.modules.scalajs" % "scalajs-sbt-plugin" % "0.4.2")
-
+// scalac options for sbt
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
+
+// addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.6")
+// addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
 

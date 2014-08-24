@@ -16,6 +16,14 @@ IF EXIST "ivy2" (
   RMDIR ivy2 /s /q
 )
 
+IF %command%==new (
+  ECHO Sorry to say, this operation is not supported yet on Windows...
+  GOTO script_eof
+)
+IF %command%==upgrade (
+  ECHO Sorry to say, this operation is not supported yet on Windows...
+  GOTO script_eof
+)
 IF %command%==run (
   GOTO run
 )
@@ -150,6 +158,34 @@ IF "%is_generator%"=="true" (
   GOTO script_eof
 )
 
+IF "%command%"=="task:clean" (
+  RMDIR task\src\main\resources /S /q
+  MKDIR task\src\main\resources
+  XCOPY src\main\resources task\src\main\resources /E /D /q
+  sbt "task/clean"
+  GOTO script_eof
+)
+
+SET is_task_run=false
+SET task_run_params=
+IF "%command%"=="task:run" SET is_task_run=true
+IF "%is_task_run%"=="true" (
+  :task_run_loop_begin
+    IF "%2"=="" GOTO task_run_loop_end
+      SET task_run_params=%task_run_params% %2
+    SHIFT
+    GOTO task_run_loop_begin
+  :task_run_loop_end
+  REM Delete the head whitespace character
+  SET task_run_params=%task_run_params:~1%
+
+  RMDIR task\src\main\resources /S /q
+  MKDIR task\src\main\resources
+  XCOPY src\main\resources task\src\main\resources /E /D /q
+  sbt "task/run %task_run_params%"
+  GOTO script_eof
+)
+
 IF "%command%"=="db:migrate" (
   RMDIR task\src\main\resources /S /q
   RMDIR task\target /S /q
@@ -252,6 +288,8 @@ REM ***************************************************************************
 ECHO.
 ECHO  Usage: skinny [COMMAND] [OPTIONS]...
 ECHO.
+ECHO   new                : will create new Skinny application
+ECHO   upgrade            : will upgrade Skinny app project
 ECHO   run/server/s       : will run application for local development
 ECHO   debug/d            : will run application with JDWP. default port 5005
 ECHO   clean              : will clear target directory
@@ -277,6 +315,9 @@ ECHO   scalajs:package  : will convert Scala.js Scala code to JS file
 ECHO.
 ECHO   eclipse       : will setup Scala IDE settings
 ECHO   idea/gen-idea : will setup IntelliJ IDEA settings
+ECHO.
+ECHO   task:clean    : will clean task project's target directory
+ECHO   task:run      : will run tasks
 ECHO.
 ECHO   g/generate controller : will generate controller
 ECHO   g/generate model      : will generate model
@@ -331,7 +372,7 @@ GOTO script_eof
 
 :scalajs_task
 IF NOT EXIST "project\_skinny_scalajs.sbt" (
-  ECHO addSbtPlugin^("org.scala-lang.modules.scalajs" %% "scalajs-sbt-plugin" %% "0.5.1"^) > "project\_skinny_scalajs.sbt"
+  ECHO addSbtPlugin^("org.scala-lang.modules.scalajs" %% "scalajs-sbt-plugin" %% "0.5.3"^) > "project\_skinny_scalajs.sbt"
 
   ECHO lazy val scalaJS = Project^(id = "scalajs", base = file^("src/main/webapp/WEB-INF/assets"^),  > "_skinny_scalajs_settings.sbt"
   ECHO   settings = Seq^(                                  >> "_skinny_scalajs_settings.sbt"
@@ -340,7 +381,7 @@ IF NOT EXIST "project\_skinny_scalajs.sbt" (
   ECHO     libraryDependencies ++= Seq^(                   >> "_skinny_scalajs_settings.sbt"
   ECHO       "org.scala-lang.modules.scalajs" %%%%%% "scalajs-dom"                    %% "0.6", >> "_skinny_scalajs_settings.sbt"
   ECHO       "org.scala-lang.modules.scalajs" %%%%%% "scalajs-jquery"                 %% "0.6", >> "_skinny_scalajs_settings.sbt"
-  ECHO       "org.scala-lang.modules.scalajs" %%%%  "scalajs-jasmine-test-framework" %% "0.5.1" %% "test" >> "_skinny_scalajs_settings.sbt"
+  ECHO       "org.scala-lang.modules.scalajs" %%%%  "scalajs-jasmine-test-framework" %% "0.5.3" %% "test" >> "_skinny_scalajs_settings.sbt"
   ECHO     ^), >> "_skinny_scalajs_settings.sbt"
   ECHO     crossTarget in Compile ^<^<= baseDirectory^(_ / ".." / ".." / "assets" / "js"^) >> "_skinny_scalajs_settings.sbt"
   ECHO   ^) >> "_skinny_scalajs_settings.sbt"
