@@ -26,6 +26,10 @@
     <td>${item.nickname}</td>
   </tr>
   <tr>
+    <th>${s.i18n.get("member.companyId")}</th>
+    <td>${item.company.map(_.name)}</td>
+  </tr>
+  <tr>
     <th>${s.i18n.get("member.birthday")}</th>
     <td>${item.birthday}</td>
   </tr>

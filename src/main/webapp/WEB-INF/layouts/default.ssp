@@ -19,6 +19,8 @@
       ${unescape(body)}
       <hr/>
       <a class="btn btn-default" href="${uri("/")}">${s.i18n.get("top")}</a>
+      <a class="btn btn-default" href="${Controllers.companies.indexUrl}">${s.i18n.get("company.list")}</a>
+      <a class="btn btn-default" href="${Controllers.members.indexUrl}">${s.i18n.get("member.list")}</a>
     </div>
     <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="${uri("/assets/js/skinny-framework.js")}"></script>

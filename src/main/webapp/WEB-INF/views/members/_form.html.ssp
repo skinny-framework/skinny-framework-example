@@ -1,5 +1,6 @@
 <%@val s: skinny.Skinny %>
 <%@val keyAndErrorMessages: skinny.KeyAndErrorMessages %>
+<%@val companies: Seq[Company] %>
 
 <%-- Be aware of package imports.
  1. src/main/scala/templates/ScalatePackage.scala
@@ -38,6 +39,34 @@
     #if (keyAndErrorMessages.hasErrors("nickname"))
       <div class="col-xs-12 has-error">
         #for (error <- keyAndErrorMessages.getErrors("nickname"))
+          <label class="control-label">${error}</label>
+        #end
+      </div>
+    #end
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label" for="company_id">
+    ${s.i18n.get("member.companyId")}
+  </label>
+  <div class="controls row">
+    <div class="${if(keyAndErrorMessages.hasErrors("company_id")) "has-error" else ""}">
+      <div class="col-xs-12">
+        <select name="company_id" class="form-control">
+          #for (company <- companies)
+            <option value=""></option>
+            #if (s.params.company_id.exists(_ == company.id.toString))
+              <option value="${company.id}" selected>${company.name}</option>
+            #else
+              <option value="${company.id}">${company.name}</option>
+            #end
+          #end
+        </select>
+      </div>
+    </div>
+    #if (keyAndErrorMessages.hasErrors("company_id"))
+      <div class="col-xs-12 has-error">
+        #for (error <- keyAndErrorMessages.getErrors("company_id"))
           <label class="control-label">${error}</label>
         #end
       </div>

@@ -35,6 +35,7 @@
     <th>${s.i18n.get("member.id")}</th>
     <th>${s.i18n.get("member.name")}</th>
     <th>${s.i18n.get("member.nickname")}</th>
+    <th>${s.i18n.get("member.companyId")}</th>
     <th>${s.i18n.get("member.birthday")}</th>
     <th></th>
   </tr>
@@ -45,6 +46,7 @@
     <td>${item.id}</td>
     <td>${item.name}</td>
     <td>${item.nickname}</td>
+    <td>${item.company.map(_.name)}</td>
     <td>${item.birthday}</td>
     <td>
       <a href="${s.url(Controllers.members.showUrl, "id" -> item.id)}" class="btn btn-default">${s.i18n.get("detail")}</a>
