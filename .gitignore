@@ -16,8 +16,6 @@ task/src/main/resources/
 build/target/
 standalone-build/
 
-# use glob syntax.
-syntax: glob
 *.ser
 *.class
 *~
@@ -32,9 +30,9 @@ syntax: glob
 .manager
 .scala_dependencies
 
-# idea
-.idea
-*.iml
+# IntelliJ IDEA settings
+#.idea
+#*.iml
 
 # building
 target
@@ -61,3 +59,8 @@ derby.log
 .lib
 logs
 
+# Skinny's default ivy.home
+ivy2
+
+node_modules
+.idea
