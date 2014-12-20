@@ -7,6 +7,8 @@ scalariformSettings
 // for ./skinny test:coverage
 // https://github.com/scoverage/sbt-scoverage
 instrumentSettings
+org.scoverage.coveralls.CoverallsPlugin.coverallsSettings
+ScoverageKeys.highlighting := true
 
 // ------------------------------
 // for ./skinnny console

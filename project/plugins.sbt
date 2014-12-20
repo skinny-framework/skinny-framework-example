@@ -13,7 +13,7 @@ addSbtPlugin("org.scalatra.sbt" % "scalatra-sbt" % "0.3.5" excludeAll(
 ))
 
 // scalatra-sbt depends on xsbt-web-plugin
-addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.9.0" excludeAll(
+addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.9.1" excludeAll(
   ExclusionRule(organization = "org.mortbay.jetty"),
   ExclusionRule(organization = "org.eclipse.jetty"),
   ExclusionRule(organization = "org.apache.tomcat.embed")
@@ -34,7 +34,8 @@ addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
 
 // --------
 // scoverage for test coverage (./skinny test:coverage)
-addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "0.99.11")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "0.99.11")
+addSbtPlugin("org.scoverage" % "sbt-coveralls" % "0.99.0")
 
 // --------
 // scalac options for sbt
