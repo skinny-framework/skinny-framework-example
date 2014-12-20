@@ -16,6 +16,12 @@ Run Skinny app now!
     ./skinny test
     ./skinny testOnly integrationtest.*Spec
 
+### How to use coveralls.io
+
+- enable your GitHub repo on https://coveralls.io/
+- `gem instanll travis`
+- `travis encrypt COVERALLS_REPO_TOKEN={your token} -add -r {github user}/{github repo}`
+
 ### Skinny Framework
 
 http://skinny-framework.org/
