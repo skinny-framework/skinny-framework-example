@@ -10,6 +10,20 @@ Run Skinny app now!
     ./skinny db:migrate
     ./skinny run
 
+### Examples
+
+I can see how to write controller code here:
+
+[src/main/scala/controller/CompaniesController.scala](https://github.com/skinny-framework/skinny-framework-example/blob/master/src/main/scala/controller/CompaniesController.scala)
+
+Skinny ORM usage:
+
+[src/main/scala/model/Member.scala](https://github.com/skinny-framework/skinny-framework-example/blob/master/src/main/scala/model/Member.scala)
+
+Simple CRUD views:
+
+[src/main/webapp/WEB-INF/views/companies](https://github.com/skinny-framework/skinny-framework-example/tree/master/src/main/webapp/WEB-INF/views/companies)
+
 ### Run tests
 
     ./skinny db:migrate test
