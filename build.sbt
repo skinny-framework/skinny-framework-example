@@ -14,6 +14,7 @@ ScoverageKeys.highlighting := true
 // for ./skinnny console
 initialCommands := """
 import skinny._
+import skinny.activeimplicits.AllImplicits._
 import _root_.controller._, model._
 import org.joda.time._
 import scalikejdbc._, config._
