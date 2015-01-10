@@ -19,8 +19,8 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "1.3.10"
-  val scalatraVersion = "2.3.0"
+  val skinnyVersion = "1.3.+"
+  val scalatraVersion = "2.3.+"
   val theScalaVersion = "2.11.5"
   val jettyVersion = "9.2.6.v20141205"
 
@@ -38,12 +38,12 @@ object SkinnyAppBuild extends Build {
       "org.skinny-framework"    %% "skinny-framework"    % skinnyVersion,
       "org.skinny-framework"    %% "skinny-assets"       % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"         % skinnyVersion,
-      "org.skinny-framework"    %  "skinny-logback"      % "1.0.3",
-      "org.apache.commons"      %  "commons-dbcp2"       % "2.0.1",
+      "org.skinny-framework"    %  "skinny-logback"      % "1.0.+",
+      "org.apache.commons"      %  "commons-dbcp2"       % "2.0.+",
       // for activeimplicits
-      "org.apache.lucene"       %  "lucene-analyzers-kuromoji"  % "4.10.3",
-      "com.h2database"          %  "h2"                  % "1.4.184",      // your own JDBC driver
-      "ch.qos.logback"          %  "logback-classic"     % "1.1.2",
+      "org.apache.lucene"       %  "lucene-analyzers-kuromoji"  % "4.10.+",
+      "com.h2database"          %  "h2"                  % "1.4.+",      // your own JDBC driver
+      "ch.qos.logback"          %  "logback-classic"     % "1.1.+",
       "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion        % "test",
       "org.skinny-framework"    %% "skinny-test"         % skinnyVersion        % "test",
       "org.scalatra"            %% "scalatra-scalatest"  % scalatraVersion      % "test",
