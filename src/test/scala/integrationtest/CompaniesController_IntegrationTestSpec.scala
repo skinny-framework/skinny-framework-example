@@ -1,13 +1,12 @@
 package integrationtest
 
-import org.scalatra.test.scalatest._
 import skinny._
 import skinny.test._
 import org.joda.time._
 import _root_.controller.Controllers
 import model._
 
-class CompaniesController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+class CompaniesController_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport with DBSettings {
   addFilter(Controllers.companies, "/*")
 
   def newCompany = FactoryGirl(Company).create()

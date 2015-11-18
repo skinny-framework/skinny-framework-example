@@ -1,11 +1,11 @@
 package integrationtest
 
-import org.scalatra.test.scalatest._
 import skinny.test.SkinnyTestSupport
+import skinny.test.SkinnyFlatSpec
 import _root_.controller.Controllers
 
-class RootController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport {
-  Controllers.root.mount(servletContextHandler.getServletContext)
+class RootController_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport {
+  addFilter(Controllers.root, "/*")
 
   it should "show top page" in {
     get("/") {

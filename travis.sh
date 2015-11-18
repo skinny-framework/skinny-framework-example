@@ -1,3 +1,3 @@
 #!/bin/bash
-./skinny db:migrate test && ./skinny test:coverage
+./skinny db:migrate test && ./skinny test
 
