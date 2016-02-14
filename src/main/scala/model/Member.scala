@@ -23,6 +23,5 @@ object Member extends SkinnyCRUDMapper[Member] with TimestampsFeature[Member] {
 
   belongsTo[Company](
     Company, (member, company) => member.copy(company = company)
-  )
-    .byDefault
+  ).byDefault
 }
