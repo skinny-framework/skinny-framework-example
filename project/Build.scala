@@ -17,7 +17,7 @@ object SkinnyAppBuild extends Build {
 
   val skinnyVersion = "2.0.+"
   val theScalaVersion = "2.11.7"
-  val jettyVersion = "9.2.14.v20151106"
+  val jettyVersion = "9.2.15.v20160210"
 
   lazy val baseSettings = servletSettings ++ Seq(
     organization := appOrganization,
@@ -25,35 +25,41 @@ object SkinnyAppBuild extends Build {
     version      := appVersion,
     scalaVersion := theScalaVersion,
     dependencyOverrides := Set(
-      "org.scala-lang" %  "scala-library"  % scalaVersion.value,
-      "org.scala-lang" %  "scala-reflect"  % scalaVersion.value,
-      "org.scala-lang" %  "scala-compiler" % scalaVersion.value
+      "org.scala-lang"         %  "scala-library"            % scalaVersion.value,
+      "org.scala-lang"         %  "scala-reflect"            % scalaVersion.value,
+      "org.scala-lang"         %  "scala-compiler"           % scalaVersion.value,
+      "org.scala-lang.modules" %% "scala-xml"                % "1.0.5",
+      "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
+      "org.slf4j"              %  "slf4j-api"                % "1.7.16"
     ),
-    libraryDependencies := Seq(
-      "org.skinny-framework"    %% "skinny-framework"    % skinnyVersion,
-      "org.skinny-framework"    %% "skinny-assets"       % skinnyVersion,
-      "org.skinny-framework"    %% "skinny-task"         % skinnyVersion,
-      "org.skinny-framework"    %  "skinny-logback"      % "1.0.+",
+    libraryDependencies ++= Seq(
+      "org.skinny-framework"    %% "skinny-framework"     % skinnyVersion,
+      "org.skinny-framework"    %% "skinny-assets"        % skinnyVersion,
+      "org.skinny-framework"    %% "skinny-task"          % skinnyVersion,
+      "org.skinny-framework"    %  "skinny-logback"       % "1.0.7",
       // for activeimplicits
       "org.apache.lucene"       %  "lucene-analyzers-kuromoji"  % "5.0.+",
-      "com.h2database"          %  "h2"                  % "1.4.+",      // your own JDBC driver
-      "ch.qos.logback"          %  "logback-classic"     % "1.1.+",
-      "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion        % "test",
-      "org.skinny-framework"    %% "skinny-test"         % skinnyVersion        % "test",
-      "org.eclipse.jetty"       %  "jetty-webapp"        % jettyVersion          % "container",
-      "org.eclipse.jetty"       %  "jetty-plus"          % jettyVersion          % "container",
-      "javax.servlet"           %  "javax.servlet-api"   % "3.1.0"               % "container;provided;test"
+      "com.h2database"          %  "h2"                   % "1.4.191",      // your own JDBC driver
+      "org.skinny-framework"    %% "skinny-factory-girl"  % skinnyVersion   % "test",
+      "org.skinny-framework"    %% "skinny-test"          % skinnyVersion   % "test",
+      "org.eclipse.jetty"       %  "jetty-webapp"         % jettyVersion    % "container",
+      "org.eclipse.jetty"       %  "jetty-plus"           % jettyVersion    % "container",
+      "javax.servlet"           %  "javax.servlet-api"    % "3.1.0"         % "container;provided;test"
     ),
+    // https://github.com/sbt/sbt/issues/2217
+    fullResolvers ~= { _.filterNot(_.name == "jcenter") },
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
-      //,"sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+      //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
-    // Faster "./skinny idea" 
+    // Faster "./skinny idea"
     transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
     // the name-hashing algorithm for the incremental compiler.
     incOptions := incOptions.value.withNameHashing(true),
+    updateOptions := updateOptions.value.withCachedResolution(true),
     logBuffered in Test := false,
     javaOptions in Test ++= Seq("-Dskinny.env=test"),
+    fork in Test := true,
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
     ideaExcludeFolders := Seq(".idea", ".idea_modules", "db", "target", "task/target", "build", "standalone-build", "node_modules")
   )
@@ -63,12 +69,10 @@ object SkinnyAppBuild extends Build {
       Seq( TemplateConfig(file(".") / "src" / "main" / "webapp" / "WEB-INF",
       // These imports should be same as src/main/scala/templates/ScalatePackage.scala
       Seq("import controller._", "import model._"),
-      Seq(Binding("context", "_root_.org.scalatra.scalate.ScalatraRenderContext", importMembers = true, isImplicit = true)),
+      Seq(Binding("context", "_root_.skinny.micro.contrib.scalate.SkinnyScalateRenderContext", importMembers = true, isImplicit = true)),
       Some("templates")))
     }
   )
-
-  lazy val jettyOrbitHack = Seq(ivyXML := <dependencies><exclude org="org.eclipse.jetty.orbit" /></dependencies>)
 
   // -------------------------------------------------------
   // Development
@@ -76,7 +80,7 @@ object SkinnyAppBuild extends Build {
 
   lazy val devBaseSettings = baseSettings ++ Seq(
     unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") },
-    // Scalatra tests become slower when multiple controller tests are loaded in the same time
+    // Integration tests become slower when multiple controller tests are loaded in the same time
     parallelExecution in Test := false,
     port in container.Configuration := 8080
   )
@@ -101,7 +105,8 @@ object SkinnyAppBuild extends Build {
   lazy val task = Project(id = "task", base = file("task"),
     settings = baseSettings ++ Seq(
       mainClass := Some("TaskRunner"),
-      name := appName + "-task"
+      name := appName + "-task",
+      libraryDependencies += "javax.servlet" % "javax.servlet-api" % "3.1.0"
     )
   ) dependsOn(dev)
 
@@ -127,8 +132,9 @@ object SkinnyAppBuild extends Build {
     settings = packagingBaseSettings ++ Seq(
       name := appName + "-standalone",
       libraryDependencies += "org.skinny-framework" %% "skinny-standalone" % skinnyVersion,
-      ideaIgnoreModule := true
-    ) ++ jettyOrbitHack
+      ideaIgnoreModule := true,
+      ivyXML := <dependencies><exclude org="org.eclipse.jetty.orbit" /></dependencies>
+    )
   )
 
 }

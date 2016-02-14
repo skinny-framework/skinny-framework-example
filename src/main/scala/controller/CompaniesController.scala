@@ -16,7 +16,9 @@ class CompaniesController extends ApplicationController {
    * Creates validator with prefix(resourceName).
    */
   override def validation(params: Params, validations: NewValidation*)(
-    implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
+    implicit
+    locale: Locale = currentLocale.orNull[Locale]
+  ): MapValidator = {
     validationWithPrefix(params, "company", validations: _*)
   }
 
@@ -67,7 +69,8 @@ class CompaniesController extends ApplicationController {
   /**
    * Input form for creation.
    */
-  def createForm: MapValidator = validation(createParams,
+  def createForm: MapValidator = validation(
+    createParams,
     paramKey("name") is required & maxLength(512),
     paramKey("url") is required & maxLength(512)
   )
@@ -122,7 +125,8 @@ class CompaniesController extends ApplicationController {
   /**
    * Input form for modification.
    */
-  def updateForm: MapValidator = validation(updateParams,
+  def updateForm: MapValidator = validation(
+    updateParams,
     paramKey("name") is required & maxLength(512),
     paramKey("url") is required & maxLength(512)
   )

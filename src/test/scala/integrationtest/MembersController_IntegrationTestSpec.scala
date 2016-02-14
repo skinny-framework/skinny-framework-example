@@ -53,20 +53,24 @@ class MembersController_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTe
   }
 
   it should "create a member" in {
-    post(s"/members",
+    post(
+      s"/members",
       "name" -> "dummy",
       "nickname" -> "dummy",
-      "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate())) {
+      "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate())
+    ) {
         logBodyUnless(403)
         status should equal(403)
       }
 
     withSession("csrf-token" -> "valid_token") {
-      post(s"/members",
+      post(
+        s"/members",
         "name" -> "dummy",
         "nickname" -> "dummy",
         "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate()),
-        "csrf-token" -> "valid_token") {
+        "csrf-token" -> "valid_token"
+      ) {
           logBodyUnless(302)
           status should equal(302)
           val id = header("Location").split("/").last.toLong
@@ -83,20 +87,24 @@ class MembersController_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTe
   }
 
   it should "update a member" in {
-    put(s"/members/${newMember.id}",
+    put(
+      s"/members/${newMember.id}",
       "name" -> "dummy",
       "nickname" -> "dummy",
-      "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate())) {
+      "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate())
+    ) {
         logBodyUnless(403)
         status should equal(403)
       }
 
     withSession("csrf-token" -> "valid_token") {
-      put(s"/members/${newMember.id}",
+      put(
+        s"/members/${newMember.id}",
         "name" -> "dummy",
         "nickname" -> "dummy",
         "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate()),
-        "csrf-token" -> "valid_token") {
+        "csrf-token" -> "valid_token"
+      ) {
           logBodyUnless(302)
           status should equal(302)
         }

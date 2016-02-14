@@ -13,5 +13,5 @@ class ScalatePackage extends TemplatePackage {
 import controller._
 import model._
   """
-}
 
+}

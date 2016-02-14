@@ -16,4 +16,3 @@ trait ApplicationController extends SkinnyController
   // override def defaultLocale = Some(new java.util.Locale("ja"))
 
 }
-

@@ -25,4 +25,3 @@ class Bootstrap extends SkinnyLifeCycle {
   }
 
 }
-

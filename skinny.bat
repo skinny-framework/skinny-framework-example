@@ -186,6 +186,15 @@ IF "%is_task_run%"=="true" (
   GOTO script_eof
 )
 
+IF "%command%"=="routes" (
+  RMDIR task\src\main\resources /S /q
+  RMDIR task\target /S /q
+  MKDIR task\src\main\resources
+  XCOPY src\main\resources task\src\main\resources /E /D /q
+  sbt "task/run routes"
+  GOTO script_eof
+)
+
 IF "%command%"=="db:migrate" (
   RMDIR task\src\main\resources /S /q
   RMDIR task\target /S /q
@@ -206,7 +215,7 @@ IF "%command%"=="db:repair" (
 
 IF %command%==eclipse (
   IF NOT EXIST "project\_skinny_eclipse.sbt" (
-    ECHO addSbtPlugin^(^"com.typesafe.sbteclipse^" %% ^"sbteclipse-plugin^" %% ^"2.4.0^"^) > "project\_skinny_eclipse.sbt"
+    ECHO addSbtPlugin^(^"com.typesafe.sbteclipse^" %% ^"sbteclipse-plugin^" %% ^"4.0.0^"^) > "project\_skinny_eclipse.sbt"
   )
   sbt eclipse
   GOTO script_eof
@@ -235,16 +244,10 @@ IF %command%==package (
 
 IF "%command%"=="package:standalone" (
   IF NOT EXIST "project\_skinny_assembly.sbt" (
-    ECHO addSbtPlugin^(^"com.eed3si9n^" %% ^"sbt-assembly^" %% ^"0.11.2^"^) > "project\_skinny_assembly.sbt"
+    ECHO addSbtPlugin^(^"com.eed3si9n^" %% ^"sbt-assembly^" %% ^"0.14.0^"^) > "project\_skinny_assembly.sbt"
     (
-      ECHO import AssemblyKeys._
-      ECHO.
-      ECHO assemblySettings
-      ECHO.
       ECHO mainClass in assembly := Some^(^"skinny.standalone.JettyLauncher^"^)
-      ECHO.
       ECHO _root_.sbt.Keys.test in assembly := {}
-      ECHO.
       ECHO.resourceGenerators in Compile ^<+= ^(resourceManaged, baseDirectory^) ^map { ^(managedBase, base^) =^>
       ECHO.  val webappBase = base / "src" / "main" / "webapp"
       ECHO.  for ^( ^(from, to^) ^<- ^webappBase ** "*" `pair` rebase(webappBase, managedBase / "main/"^) ^)
@@ -299,6 +302,7 @@ ECHO   compile            : will compile all the classes
 ECHO   ~compile           : will compile all the classes when changes are detected
 ECHO   db:migrate         : will execute database migration
 ECHO   db:repair          : will recover when previous migration failed
+ECHO   routes             : will display routes information"
 ECHO   test               : will run all the tests
 ECHO   ~test              : will run all the tests when changes are detected
 ECHO   testQuick          : will run only failed tests
@@ -373,16 +377,17 @@ GOTO script_eof
 :scalajs_task
 IF NOT EXIST "project\_skinny_scalajs.sbt" (
   ECHO resolvers += "scala-js-release" at "http://dl.bintray.com/scala-js/scala-js-releases" > "project\_skinny_scalajs.sbt"
-  ECHO addSbtPlugin^("org.scala-js" %% "sbt-scalajs" %% "0.6.4"^) >> "project\_skinny_scalajs.sbt"
+  ECHO addSbtPlugin^("org.scala-js" %% "sbt-scalajs" %% "0.6.7"^) >> "project\_skinny_scalajs.sbt"
 
   ECHO lazy val scalajs = ^(project in file^("src/main/webapp/WEB-INF/assets"^)^).settings^( > "_skinny_scalajs_settings.sbt"
   ECHO   name := "application", // JavaScript file name  >> "_skinny_scalajs_settings.sbt"
-  ECHO   scalaVersion := "2.11.6", >> "_skinny_scalajs_settings.sbt"
+  ECHO   scalaVersion := "2.11.7", >> "_skinny_scalajs_settings.sbt"
   ECHO   unmanagedSourceDirectories in Compile ^<+= baseDirectory^(_ / "scala"^), >> "_skinny_scalajs_settings.sbt"
+  ECHO   fullResolvers ~= { _.filterNot^(_.name == "jcenter"^) }, >> "_skinny_scalajs_settings.sbt"
   ECHO   libraryDependencies ++= Seq^(                   >> "_skinny_scalajs_settings.sbt"
-  ECHO     "org.scala-js" %%%%%% "scalajs-dom"     %% "0.8.0", >> "_skinny_scalajs_settings.sbt"
-  ECHO     "be.doeraene"  %%%%%% "scalajs-jquery"  %% "0.8.0", >> "_skinny_scalajs_settings.sbt"
-  ECHO     "org.monifu"   %%%%  "minitest"        %% "0.11" %% "test" >> "_skinny_scalajs_settings.sbt"
+  ECHO     "org.scala-js" %%%%%% "scalajs-dom"     %% "0.8.2", >> "_skinny_scalajs_settings.sbt"
+  ECHO     "be.doeraene"  %%%%%% "scalajs-jquery"  %% "0.8.1", >> "_skinny_scalajs_settings.sbt"
+  ECHO     "org.monifu"   %%%%  "minitest"        %% "0.14" %% "test" >> "_skinny_scalajs_settings.sbt"
   ECHO   ^), >> "_skinny_scalajs_settings.sbt"
   ECHO   crossTarget in Compile ^<^<= baseDirectory^(_ / ".." / ".." / "assets" / "js"^) >> "_skinny_scalajs_settings.sbt"
   ECHO ^).enablePlugins^(ScalaJSPlugin^) >> "_skinny_scalajs_settings.sbt"

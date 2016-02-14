@@ -33,18 +33,22 @@ class CompaniesController_IntegrationTestSpec extends SkinnyFlatSpec with Skinny
   }
 
   it should "create a company" in {
-    post(s"/companies",
+    post(
+      s"/companies",
       "name" -> "dummy",
-      "url" -> "dummy") {
+      "url" -> "dummy"
+    ) {
         logBodyUnless(403)
         status should equal(403)
       }
 
     withSession("csrf-token" -> "valid_token") {
-      post(s"/companies",
+      post(
+        s"/companies",
         "name" -> "dummy",
         "url" -> "dummy",
-        "csrf-token" -> "valid_token") {
+        "csrf-token" -> "valid_token"
+      ) {
           logBodyUnless(302)
           status should equal(302)
           val id = header("Location").split("/").last.toLong
@@ -61,18 +65,22 @@ class CompaniesController_IntegrationTestSpec extends SkinnyFlatSpec with Skinny
   }
 
   it should "update a company" in {
-    post(s"/companies/${newCompany.id}",
+    post(
+      s"/companies/${newCompany.id}",
       "name" -> "dummy",
-      "url" -> "dummy") {
+      "url" -> "dummy"
+    ) {
         logBodyUnless(403)
         status should equal(403)
       }
 
     withSession("csrf-token" -> "valid_token") {
-      post(s"/companies/${newCompany.id}",
+      post(
+        s"/companies/${newCompany.id}",
         "name" -> "dummy",
         "url" -> "dummy",
-        "csrf-token" -> "valid_token") {
+        "csrf-token" -> "valid_token"
+      ) {
           logBodyUnless(302)
           status should equal(302)
         }

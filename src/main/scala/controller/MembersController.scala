@@ -29,7 +29,8 @@ class MembersController extends SkinnyResource with ApplicationController {
   }
 
   override def createParams = Params(params).withDate("birthday")
-  override def createForm = validation(createParams,
+  override def createForm = validation(
+    createParams,
     paramKey("name") is required & maxLength(512),
     paramKey("nickname") is required & maxLength(64),
     paramKey("company_id") is numeric & validCompany,
@@ -43,7 +44,8 @@ class MembersController extends SkinnyResource with ApplicationController {
   )
 
   override def updateParams = Params(params).withDate("birthday")
-  override def updateForm = validation(updateParams,
+  override def updateForm = validation(
+    updateParams,
     paramKey("name") is required & maxLength(512),
     paramKey("nickname") is required & maxLength(64),
     paramKey("company_id") is numeric & validCompany,

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-current_dir=.
+current_dir="."
 current_project=`ls | grep project`
 script_dir=`dirname $0`
 sbt_path=${script_dir}/sbt
@@ -9,15 +9,14 @@ chmod +x ${sbt_path}
 chmod +x ${sbt_debug_path}
 
 # prepared deps
-if [ -d "${current_dir}/ivy2" ]; then
+if [ -d "${script_dir}/ivy2" ]; then
   mkdir -p $HOME/.ivy2/cache/
-  cp -prn ${current_dir}/ivy2/cache/* $HOME/.ivy2/cache/.
-  rm -rf ${current_dir}/ivy2
+  cp -prn ${script_dir}/ivy2/cache/* $HOME/.ivy2/cache/.
 fi
 
 function verify_skinny_project() {
   if [ "${current_project}" == "" ]; then
-    echo "Skinny applicaiton not found here!"
+    echo "Skinny application not found here!"
     exit 1
   fi
 }
@@ -53,16 +52,17 @@ function setup_scalajs() {
   setting_file="${current_dir}/project/_skinny_scalajs.sbt"
   if [ ! -f "${setting_file}" ]; then
     echo "resolvers += \"scala-js-release\" at \"http://dl.bintray.com/scala-js/scala-js-releases\"
-addSbtPlugin(\"org.scala-js\" % \"sbt-scalajs\" % \"0.6.4\")" > ${setting_file}
+addSbtPlugin(\"org.scala-js\" % \"sbt-scalajs\" % \"0.6.7\")" > ${setting_file}
 
 echo "lazy val scalajs = (project in file(\"src/main/webapp/WEB-INF/assets\")).settings(
   name := \"application\", // JavaScript file name
-  scalaVersion := \"2.11.6\",
+  scalaVersion := \"2.11.7\",
   unmanagedSourceDirectories in Compile <+= baseDirectory(_ / \"scala\"),
+  fullResolvers ~= { _.filterNot(_.name == \"jcenter\") },
   libraryDependencies ++= Seq(
-    \"org.scala-js\" %%% \"scalajs-dom\"    % \"0.8.0\",
-    \"be.doeraene\"  %%% \"scalajs-jquery\" % \"0.8.0\",
-    \"org.monifu\"   %%  \"minitest\"       % \"0.11\" % \"test\"
+    \"org.scala-js\" %%% \"scalajs-dom\"    % \"0.8.2\",
+    \"be.doeraene\"  %%% \"scalajs-jquery\" % \"0.8.1\",
+    \"org.monifu\"   %%  \"minitest\"       % \"0.14\" % \"test\"
   ),
   crossTarget in Compile <<= baseDirectory(_ / \"..\" / \"..\" / \"assets\" / \"js\")
 ).enablePlugins(ScalaJSPlugin)" > ${current_dir}/_skinny_scalajs_settings.sbt
@@ -80,37 +80,28 @@ if [ "$command" == "new" ]; then
     echo "Usage: ./skinny new [application name]"
     exit 1
   fi
-  # node_modules can be configured with PREFIX env variable
-  # homebrew formula will set this value to avoid using universal npm modules
-  if [ "${PREFIX}" == "" ]; then
-    existing_version=`npm list -g | grep generator-skinny`
-    if [ "${existing_version}" == "" ]; then
-      npm install -g yo
-      npm install -g generator-skinny
-    fi
+  if [ -d "$script_dir/skinny-blank-app" ]; then
+    cp -pr $script_dir/skinny-blank-app $name
+    echo " ******************************************** "
+    echo "   New Skinny application has been created!"
+    echo ""
+    echo "   $ cd ./${name}"
+    echo "   $ ./skinny run"
+    echo ""
+    echo "   Enjoy Scala programming!"
+    echo ""
+    echo " ******************************************** "
+    echo ""
+  else
+    echo " ******************************************** "
+    echo "   !!! ERROR !!!"
+    echo ""
+    echo "   skinny new command is unsupported when running local skinny script."
+    echo '   Run `brew install skinny` and then use the global script.'
+    echo ""
+    echo " ******************************************** "
+    exit 1
   fi
-  mkdir -p ${name}
-  cd ${name}
-  yo skinny
-
-  echo " ******************************************** "
-  echo "   New Skinny application has been created!"
-  echo ""
-  echo "   $ cd ./${name}"
-  echo "   $ ./skinny run"
-  echo ""
-  echo "   Enjoy Scala programming!"
-  echo ""
-  echo " ******************************************** "
-  echo ""
-
-elif [ "$command" == "upgrade" ]; then
-  npm update -g yo
-  npm update -g generator-skinny
-  mv package.json _package.json
-  yo --no-insight skinny
-  mv _package.json package.json
-  
 elif [ "$command" == "run" -o "$command" == "s" -o "$command" == "server" ]; then
   option="$2"
   if [ "$option" == "-precompile" -o "$option" == "--precompile" ]; then
@@ -180,6 +171,10 @@ elif [ "$command" == "g" -o "$command" == "generate" ]; then
     command="task/run generate:$generator_type $@"
     ${sbt_path} "${command}"
   fi
+elif [ "$command" == "routes" ]; then
+  copy_resources_to_task
+  shift
+  ${sbt_path} "task/run routes $@"
 elif [ "$command" == "db:migrate" ]; then
   copy_resources_to_task
   shift
@@ -191,7 +186,7 @@ elif [ "$command" == "db:repair" ]; then
 elif [ "$command" == "eclipse" ]; then
   setting_file="${current_dir}/project/_skinny_eclipse.sbt"
   if [ ! -f "${setting_file}" ]; then
-    echo "addSbtPlugin(\"com.typesafe.sbteclipse\" % \"sbteclipse-plugin\" % \"2.4.0\")" > ${setting_file} 
+    echo "addSbtPlugin(\"com.typesafe.sbteclipse\" % \"sbteclipse-plugin\" % \"4.0.0\")" > ${setting_file}
   fi
   ${sbt_path} eclipse
 elif [ "$command" == "idea" -o "$command" == "gen-idea" ]; then
@@ -203,15 +198,9 @@ elif [ "$command" == "package" ]; then
 elif [ "$command" == "package:standalone" ]; then
   setting_file="${current_dir}/project/_skinny_assembly.sbt"
   if [ ! -f "${setting_file}" ]; then
-    echo "addSbtPlugin(\"com.eed3si9n\" % \"sbt-assembly\" % \"0.11.2\")" > ${setting_file} 
-    echo "import AssemblyKeys._
-
-assemblySettings
-
-mainClass in assembly := Some(\"skinny.standalone.JettyLauncher\")
-
+    echo "addSbtPlugin(\"com.eed3si9n\" % \"sbt-assembly\" % \"0.14.0\")" > ${setting_file}
+    echo "mainClass in assembly := Some(\"skinny.standalone.JettyLauncher\")
 _root_.sbt.Keys.test in assembly := {}
-
 resourceGenerators in Compile <+= (resourceManaged, baseDirectory) map { (managedBase, base) =>
   val webappBase = base / \"src\" / \"main\" / \"webapp\"
   for ( (from, to) <- webappBase ** \"*\" \`pair\` rebase(webappBase, managedBase / \"main/\") )
@@ -219,8 +208,7 @@ resourceGenerators in Compile <+= (resourceManaged, baseDirectory) map { (manage
     Sync.copy(from, to)
     to
   }
-}
-" > "${current_dir}/_skinny_assembly_settings.sbt"
+}" > "${current_dir}/_skinny_assembly_settings.sbt"
   fi
 
   setup_standalone_build
@@ -236,7 +224,6 @@ else
   echo " Usage: ./skinny [COMMAND] [OPTIONS]..."
   echo ""
   echo "  new             : will create new Skinny application"
-  echo "  upgrade         : will upgrade Skinny app project"
   echo "  run/server/s    : will run application for local development"
   echo "  run -precompile : will run application with Scalate precompilation"
   echo "  debug/d         : will run application with JDWP. default port 5005"
@@ -247,6 +234,7 @@ else
   echo "  ~compile        : will compile all the classes when changes are detected"
   echo "  db:migrate      : will execute database migration"
   echo "  db:repair       : will recover when previous migration failed"
+  echo "  routes          : will display routes information"
   echo "  test            : will run all the tests"
   echo "  ~test           : will run all the tests when changes are detected"
   echo "  testQuick       : will run only failed tests"

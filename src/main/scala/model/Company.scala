@@ -9,7 +9,8 @@ case class Company(
   name: String,
   url: String,
   createdAt: DateTime,
-  updatedAt: DateTime)
+  updatedAt: DateTime
+)
 
 object Company extends SkinnyCRUDMapper[Company] with TimestampsFeature[Company] {
   override lazy val tableName = "companies"

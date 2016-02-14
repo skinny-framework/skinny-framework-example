@@ -1,11 +1,10 @@
 package integrationtest
 
-import skinny.test.SkinnyTestSupport
-import skinny.test.SkinnyFlatSpec
 import _root_.controller.Controllers
+import skinny.test.{ SkinnyFlatSpec, SkinnyTestSupport }
 
 class RootController_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport {
-  addFilter(Controllers.root, "/*")
+  Controllers.root.mount(servletContextHandler.getServletContext)
 
   it should "show top page" in {
     get("/") {

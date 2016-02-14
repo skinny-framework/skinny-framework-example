@@ -49,7 +49,8 @@ class CompaniesControllerSpec extends FunSpec with Matchers with DBSettings {
         val controller = createMockController
         controller.prepareParams(
           "name" -> "dummy",
-          "url" -> "dummy")
+          "url" -> "dummy"
+        )
         controller.createResource
         controller.status should equal(200)
       }
@@ -76,7 +77,8 @@ class CompaniesControllerSpec extends FunSpec with Matchers with DBSettings {
       val controller = createMockController
       controller.prepareParams(
         "name" -> "dummy",
-        "url" -> "dummy")
+        "url" -> "dummy"
+      )
       controller.updateResource(company.id)
       controller.status should equal(200)
     }

@@ -59,7 +59,8 @@ class MembersControllerSpec extends FunSpec with Matchers with DBSettings {
         controller.prepareParams(
           "name" -> "dummy",
           "nickname" -> "dummy",
-          "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate()))
+          "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate())
+        )
         controller.createResource()
         controller.status should equal(200)
       }
@@ -87,7 +88,8 @@ class MembersControllerSpec extends FunSpec with Matchers with DBSettings {
       controller.prepareParams(
         "name" -> "dummy",
         "nickname" -> "dummy",
-        "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate()))
+        "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate())
+      )
       controller.updateResource(member.id)
       controller.status should equal(200)
     }
