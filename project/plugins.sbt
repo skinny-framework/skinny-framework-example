@@ -3,10 +3,11 @@
 // --------------------------------------------
 resolvers += Classpaths.sbtPluginReleases
 resolvers += "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
+// https://github.com/sbt/sbt/issues/2217
+fullResolvers ~= { _.filterNot(_.name == "jcenter") }
 
-// Internally uses Eclipse Aether to resolve Maven dependencies instead of Apache Ivy
-// https://github.com/sbt/sbt/releases/tag/v0.13.8
-//addMavenResolverPlugin
+// Much fatster dependency resolver - https://github.com/alexarchambault/coursier
+addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.0-RC3")
 
 // --------
 // scalac options for sbt
@@ -14,10 +15,10 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 // --------
 // Servlet app packager/runner plugin
-addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin" % "2.0.4")
+addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin" % "2.1.4")
 
 // Scalate template files precompilation
-addSbtPlugin("org.skinny-framework" % "sbt-scalate-precompiler" % "1.7.1.0")
+addSbtPlugin("org.scalatra.scalate" % "sbt-scalate-precompiler" % "1.8.0.1")
 
 // --------
 // format Scala source code automatically
@@ -30,9 +31,9 @@ addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
 
 // --------
 // scoverage for test coverage (./skinny test:coverage)
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.5")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.0")
 // Coveralls integration - http://coveralls.io/
-//addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.0")
+//addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.1.0")
 
 // check the latest version of dependencies
-// addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.10")
+// addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.3.0")
