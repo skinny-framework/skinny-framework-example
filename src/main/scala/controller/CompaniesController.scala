@@ -17,8 +17,7 @@ class CompaniesController extends ApplicationController {
    */
   override def validation(params: Params, validations: NewValidation*)(
     implicit
-    locale: Locale = currentLocale.orNull[Locale]
-  ): MapValidator = {
+    locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
     validationWithPrefix(params, "company", validations: _*)
   }
 
@@ -72,16 +71,14 @@ class CompaniesController extends ApplicationController {
   def createForm: MapValidator = validation(
     createParams,
     paramKey("name") is required & maxLength(512),
-    paramKey("url") is required & maxLength(512)
-  )
+    paramKey("url") is required & maxLength(512))
 
   /**
    * Strong parameter definitions for creation form.
    */
   def createFormStrongParameters: Seq[(String, ParamType)] = Seq(
     "name" -> ParamType.String,
-    "url" -> ParamType.String
-  )
+    "url" -> ParamType.String)
 
   /**
    * Creates new resource.
@@ -128,16 +125,14 @@ class CompaniesController extends ApplicationController {
   def updateForm: MapValidator = validation(
     updateParams,
     paramKey("name") is required & maxLength(512),
-    paramKey("url") is required & maxLength(512)
-  )
+    paramKey("url") is required & maxLength(512))
 
   /**
    * Strong parameter definitions for modification form.
    */
   def updateFormStrongParameters: Seq[(String, ParamType)] = Seq(
     "name" -> ParamType.String,
-    "url" -> ParamType.String
-  )
+    "url" -> ParamType.String)
 
   /**
    * Updates the specified single resource.

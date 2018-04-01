@@ -4,11 +4,10 @@ import _root_.controller._
 
 class Bootstrap extends SkinnyLifeCycle {
 
-  // If you prefer more logging, configure this settings 
+  // If you prefer more logging, configure this settings
   // http://scalikejdbc.org/documentation/configuration.html
   scalikejdbc.GlobalSettings.loggingSQLAndTime = scalikejdbc.LoggingSQLAndTimeSettings(
-    singleLineMode = true
-  )
+    singleLineMode = true)
 
   // simple worker example
   /*

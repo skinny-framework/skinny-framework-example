@@ -34,14 +34,12 @@ class MembersController extends SkinnyResource with ApplicationController {
     paramKey("name") is required & maxLength(512),
     paramKey("nickname") is required & maxLength(64),
     paramKey("company_id") is numeric & validCompany,
-    paramKey("birthday") is dateFormat
-  )
+    paramKey("birthday") is dateFormat)
   override def createFormStrongParameters = Seq(
     "name" -> ParamType.String,
     "nickname" -> ParamType.String,
     "company_id" -> ParamType.Long,
-    "birthday" -> ParamType.LocalDate
-  )
+    "birthday" -> ParamType.LocalDate)
 
   override def updateParams = Params(params).withDate("birthday")
   override def updateForm = validation(
@@ -49,13 +47,11 @@ class MembersController extends SkinnyResource with ApplicationController {
     paramKey("name") is required & maxLength(512),
     paramKey("nickname") is required & maxLength(64),
     paramKey("company_id") is numeric & validCompany,
-    paramKey("birthday") is dateFormat
-  )
+    paramKey("birthday") is dateFormat)
   override def updateFormStrongParameters = Seq(
     "name" -> ParamType.String,
     "nickname" -> ParamType.String,
     "company_id" -> ParamType.Long,
-    "birthday" -> ParamType.LocalDate
-  )
+    "birthday" -> ParamType.LocalDate)
 
 }
