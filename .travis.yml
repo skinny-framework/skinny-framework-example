@@ -1,7 +1,6 @@
 language: scala
-scala: 2.11.7
 sudo: false
-jdk: oraclejdk8
+jdk: openjdk8
 script: "./travis.sh"
 #after_success: sbt coveralls
 env:
