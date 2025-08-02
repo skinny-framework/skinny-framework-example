@@ -32,7 +32,7 @@ Simple CRUD views:
 ### How to use coveralls.io
 
 - enable your GitHub repo on https://coveralls.io/
-- `gem instanll travis`
+- `gem install travis`
 - `travis encrypt COVERALLS_REPO_TOKEN={your token} -add -r {github user}/{github repo}`
 
 ### Skinny Framework
